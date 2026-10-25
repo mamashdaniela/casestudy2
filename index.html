@@ -11,153 +11,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RuTea S Noy — Portfolio Preview</title>
+  <title>RuTea S Noy — Protected Preview</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
     body, html {
-      width: 100%;
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #0d0e12;
-      color: #ffffff;
-      overflow: hidden;
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0d0e12; color: #fff; display: flex; align-items: center; justify-content: center;
     }
-
-    /* Fullscreen iFrame container for Notion */
-    #notion-container {
-      width: 100%;
-      height: 100%;
-      display: none; /* Hidden until unlocked */
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    /* Password Gate Overlay */
-    #gate-overlay {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at center, #1a1c23 0%, #0d0e12 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 20px;
-    }
-
     .card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 40px 32px;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px; padding: 40px; max-width: 360px; width: 100%; text-align: center;
     }
-
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 8px;
-      color: #e2e8f0;
-      letter-spacing: -0.5px;
-    }
-
-    p {
-      font-size: 0.9rem;
-      color: #94a3b8;
-      margin-bottom: 24px;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px 16px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(0, 0, 0, 0.4);
-      color: #fff;
-      font-size: 1rem;
-      text-align: center;
-      margin-bottom: 16px;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    input:focus {
-      border-color: #ef4444;
-      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      border-radius: 8px;
-      border: none;
-      background: #ef4444;
-      color: white;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    button:hover {
-      background: #dc2626;
-    }
-
-    .error {
-      color: #f87171;
-      font-size: 0.85rem;
-      margin-top: 12px;
-      display: none;
-    }
+    input { width: 100%; padding: 12px; margin-bottom: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); color: #fff; text-align: center; font-size: 1rem; }
+    button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #ef4444; color: #fff; font-weight: 600; cursor: pointer; }
+    .error { color: #f87171; font-size: 0.85rem; margin-top: 10px; display: none; }
   </style>
 </head>
 <body>
-
-  <!-- Lock Screen Overlay -->
-  <div id="gate-overlay">
-    <div class="card">
-      <h1>RuTea S Noy</h1>
-      <p>Protected Client Preview</p>
-      <form onsubmit="unlockSite(event)">
-        <input type="password" id="passcode" placeholder="Enter Password" required />
-        <button type="submit">Access Portfolio</button>
-      </form>
-      <div id="error-msg" class="error">Incorrect password. Please try again.</div>
-    </div>
-  </div>
-
-  <!-- Notion Site Embed -->
-  <div id="notion-container">
-    <!-- PASTE YOUR NOTION PUBLIC WEB LINK IN THE SRC BELOW -->
-    <iframe id="notion-frame" src="https://drodspace.notion.site/RuTea-S-Noy-40477670936f80e58587c6f95f28f00b?source=copy_link"></iframe>
+  <div class="card">
+    <h2>RuTea S Noy</h2>
+    <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Protected Client Preview</p>
+    <form onsubmit="checkPassword(event)">
+      <input type="password" id="pwd" placeholder="Enter Password" required />
+      <button type="submit">Access Portfolio</button>
+    </form>
+    <div id="err" class="error">Incorrect password.</div>
   </div>
 
   <script>
-    // Set your desired password here
-    const PASSCODE = "art2026"; 
+    const CORRECT_PASSWORD = "art2026"; // Change to your password
+    const NOTION_URL = "https://drodspace.notion.site/RuTea-S-Noy-40477670936f80e58587c6f95f28f00b?source=copy_link"; // Paste your published Notion link
 
-    function unlockSite(e) {
+    function checkPassword(e) {
       e.preventDefault();
-      const input = document.getElementById('passcode').value;
-      const errorMsg = document.getElementById('error-msg');
-
-      if (input === PASSCODE) {
-        // Hide gate and show iframe
-        document.getElementById('gate-overlay').style.display = 'none';
-        document.getElementById('notion-container').style.display = 'block';
+      if(document.getElementById('pwd').value === CORRECT_PASSWORD) {
+        window.location.href = NOTION_URL; // Redirects smoothly to Notion
       } else {
-        errorMsg.style.display = 'block';
+        document.getElementById('err').style.display = 'block';
       }
     }
   </script>
